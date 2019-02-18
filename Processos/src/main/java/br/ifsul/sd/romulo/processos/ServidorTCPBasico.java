@@ -5,15 +5,20 @@
  */
 package br.ifsul.sd.romulo.processos;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
 
 public class ServidorTCPBasico {
 
-    public static void main(String[] args) {
+    public void iniciarServer() {
         try {
             // Instancia o ServerSocket ouvindo a porta 12345
             ServerSocket servidor = new ServerSocket(12345);
@@ -23,26 +28,37 @@ public class ServidorTCPBasico {
                 // o servidor receba um pedido de conexão
                 Socket cliente = servidor.accept();
                 System.out.println("Cliente conectado: " + cliente.getInetAddress().getHostAddress());
-                ObjectOutputStream saida = new ObjectOutputStream(cliente.getOutputStream());
-                ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(cliente.getOutputStream()));
 
-                String msgCliente = (String) entrada.readObject();
-                saida.flush();
-                
+                String msgCliente = msgCliente = reader.readLine();
+
                 System.out.println("Msg recebida de cliente: " + msgCliente);
 
-                if (msgCliente.startsWith("OLA")) {
-                    saida.writeObject("Ola recebido com sucesso em " + new Date());
-                } else {
-                    saida.writeObject("Ola não recebido com sucesso em " + new Date());
-                }
-
-                saida.close();
+                parserProtocolo(msgCliente, writer);
+                writer.flush();
+                
+                Thread.sleep(5000);
+                
+                reader.close();
                 cliente.close();
             }
         } catch (Exception e) {
             System.out.println("Erro: " + e.getMessage());
         } finally {
         }
+    }
+
+    private void parserProtocolo(String msgCliente, BufferedWriter writer) throws IOException {
+        if (msgCliente.startsWith("OLA")) {
+            writer.write("Ola recebido com sucesso em " + new Date() + "\n");
+        } else {
+            writer.write("Ola não recebido com sucesso em " + new Date() + "\n");
+        }
+    }
+
+    public static void main(String[] args) {
+        ServidorTCPBasico server = new ServidorTCPBasico();
+        server.iniciarServer();
     }
 }

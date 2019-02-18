@@ -5,26 +5,30 @@
  */
 package br.ifsul.sd.romulo.processos;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import javax.swing.JOptionPane;
 
 public class ClienteTCPBasico {
-
+    
     public static void main(String[] args) {
         try {
             Socket cliente = new Socket("localhost", 12345);
-            ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
-            ObjectOutputStream saida = new ObjectOutputStream(cliente.getOutputStream());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(cliente.getOutputStream()));
             
-            saida.flush();
-            saida.writeObject("OLA");
+            writer.write("OLA\n");
+            writer.flush();
             
-            String msgRecebida = (String) entrada.readObject();
+            String msgRecebida = reader.readLine();
             JOptionPane.showMessageDialog(null, "Mensagem recebida do servidor:" + msgRecebida.toString());
-            entrada.close();
-            saida.close();
+            writer.close();
+            reader.close();
             
             System.out.println("Conexão encerrada");
         } catch (Exception e) {
