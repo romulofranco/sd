@@ -99,15 +99,15 @@ public class ChatClient {
     private void run() throws IOException {
 
         // Make connection and initialize streams
-        var serverAddress = getServerAddress();
-        var socket = new Socket(serverAddress, 9001);
+        String serverAddress = getServerAddress();
+        Socket socket = new Socket(serverAddress, 9001);
         in = new BufferedReader(new InputStreamReader(
                 socket.getInputStream()));
         out = new PrintWriter(socket.getOutputStream(), true);
 
         // Process all messages from server, according to the protocol.
         while (true) {
-            var line = in.readLine();
+            String line = in.readLine();
             if (line.startsWith("SUBMITNAME")) {
                 out.println(getName());
             } else if (line.startsWith("NAMEACCEPTED")) {

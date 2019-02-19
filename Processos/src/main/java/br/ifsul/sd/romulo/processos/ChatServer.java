@@ -51,7 +51,7 @@ public class ChatServer {
      */
     public static void main(String[] args) throws Exception {
         System.out.println("The chat server is running.");
-        try (var listener = new ServerSocket(PORT)) {
+        try (ServerSocket listener = new ServerSocket(PORT)) {
             while (true) {
                 new Handler(listener.accept()).start();
             }
