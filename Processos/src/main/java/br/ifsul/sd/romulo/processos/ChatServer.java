@@ -111,7 +111,7 @@ public class ChatServer {
                 // to the set of all writers so this client can receive broadcast messages.
                 out.println("NAMEACCEPTED");
                 writers.add(out);
-
+                out.flush();
                 // Accept messages from this client and broadcast them.
                 // Ignore other clients that cannot be broadcasted to.
                 while (true) {
