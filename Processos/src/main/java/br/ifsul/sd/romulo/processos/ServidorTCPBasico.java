@@ -6,7 +6,6 @@
 package br.ifsul.sd.romulo.processos;
 
 import java.net.ServerSocket;
-import java.net.Socket;
 
 public class ServidorTCPBasico {
 
@@ -16,10 +15,6 @@ public class ServidorTCPBasico {
             ServerSocket servidor = new ServerSocket(12345);
             System.out.println("Servidor ouvindo a porta 12345");
             while (true) {
-                // o método accept() bloqueia a execução até que
-                // o servidor receba um pedido de conexão
-                //Socket cliente = servidor.accept();
-              
                 new RecursoESB(servidor.accept()).start();
             }
         } catch (Exception e) {
