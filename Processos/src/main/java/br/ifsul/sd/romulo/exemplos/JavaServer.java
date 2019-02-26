@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.ifsul.sd.romulo.processos;
+package br.ifsul.sd.romulo.exemplos;
 
 import java.io.*;
 import java.net.*;
