@@ -7,6 +7,7 @@ package br.ifsul.sd.romulo.threads.exemplo;
 
 class Multi extends Thread {
 
+    @Override
     public void run() {
         System.out.println("thread is running...");
     }
