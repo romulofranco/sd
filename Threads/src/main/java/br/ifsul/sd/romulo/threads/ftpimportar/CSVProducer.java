@@ -16,7 +16,7 @@ public class CSVProducer {
     static int MAX_LINES_IN_FILE = 20000;
 
     public void writeContentToCsv(int file, int system) throws Exception {
-        try (FileWriter writer = new FileWriter("c:\\ftp\\arquivo_" + file + "_legado_" + system + ".csv")) {
+        try (FileWriter writer = new FileWriter("c:\\ftp\\legado_" + system + "_arquivo_" + file + ".csv")) {
             for (int i = 0; i < MAX_LINES_IN_FILE; i++) {
                 writer.append("" + i++)
                         .append(";teste 1;teste 2;teste 3;teste 4;teste 5;teste 1;teste 2")
