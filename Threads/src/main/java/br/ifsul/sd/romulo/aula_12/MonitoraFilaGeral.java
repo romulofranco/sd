@@ -5,6 +5,9 @@
  */
 package br.ifsul.sd.romulo.aula_12;
 
+import br.ifsul.sd.romulo.aula_19.ConexaoCliente;
+import br.ifsul.sd.romulo.aula_19.ExecutaFilaChat;
+import br.ifsul.sd.romulo.aula_19.RecursoESB;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,31 +17,33 @@ import java.util.List;
  */
 public class MonitoraFilaGeral extends Thread {
 
-    private List<String> filaGeral;
-    private List<String> fila1;
-    private List<String> fila2;
-    private List<String> fila3;
+    private List<RecursoESB> filaGeral;
+    private List<RecursoESB> filaChatCliente;
+    private List<RecursoESB> filaChatGerente;
+    private List<RecursoESB> filaProdutor;
 
     private boolean somenteImprime = true;
 
-    public MonitoraFilaGeral(List<String> filaGeral, boolean somenteImprime) {
+    public MonitoraFilaGeral(List<RecursoESB> filaGeral, boolean somenteImprime) {
         this.filaGeral = filaGeral;
 
-        fila1 = new ArrayList<>();
-        fila2 = new ArrayList<>();
-        fila3 = new ArrayList<>();
+        filaChatCliente = new ArrayList<>();
+        filaChatGerente = new ArrayList<>();
+        filaProdutor = new ArrayList<>();
 
         this.somenteImprime = somenteImprime;
     }
 
     public void iniciarExecutaFila() {
-        ExecutaFila executaFila1 = new ExecutaFila("Fila 1", fila1);
-        ExecutaFila executaFila2 = new ExecutaFila("Fila 2", fila2);
-        ExecutaFila executaFila3 = new ExecutaFila("Fila 3", fila3);
+        ExecutaFila executaFila1 = new ExecutaFila("Fila Chat Cliente", filaChatCliente, RecursoESB.TIPO_CLIENTE);
+        ExecutaFila executaFila2 = new ExecutaFila("Fila Chat Gerente", filaChatGerente, RecursoESB.TIPO_GERENTE);
+        ExecutaFila executaFila3 = new ExecutaFila("Fila Importar FTP", filaProdutor, RecursoESB.TIPO_PRODUTOR);
+        ExecutaFilaChat executaFilaChat = new ExecutaFilaChat("Fila Chat", filaChatCliente, filaChatGerente);
 
         executaFila1.start();
         executaFila2.start();
         executaFila3.start();
+        executaFilaChat.start();
     }
 
     @Override
@@ -55,13 +60,14 @@ public class MonitoraFilaGeral extends Thread {
         }
     }
 
-    private synchronized void inserirFila(String valor, int fila) {
-        if (fila == 1) {
-            fila1.add(valor);
-        } else if (fila == 2) {
-            fila2.add(valor);
-        } else {
-            fila3.add(valor);
+    private synchronized void inserirFila(RecursoESB recurso) {
+
+        if (recurso.getMessage().startsWith(ConexaoCliente.PROTOCOL_CHATCLIENTE)) {
+            filaChatCliente.add(recurso);
+        } else if (recurso.getMessage().startsWith(ConexaoCliente.PROTOCOL_CHATGERENTE)) {
+            filaChatGerente.add(recurso);
+        } else if (recurso.getMessage().startsWith(ConexaoCliente.PROTOCOL_PRODUTOR)) {
+            filaProdutor.add(recurso);
         }
     }
 
@@ -69,10 +75,8 @@ public class MonitoraFilaGeral extends Thread {
         if (!filaGeral.isEmpty()) {
             System.out.println(filaGeral.get(0));
 
-            String valor = filaGeral.get(0);
-            String temp[] = valor.split(",");
-            int fila = Integer.parseInt(temp[1]);
-            this.inserirFila(valor, fila);
+            RecursoESB recurso = (RecursoESB) filaGeral.get(0);
+            this.inserirFila(recurso);
 
             filaGeral.remove(0);
 
