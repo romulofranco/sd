@@ -61,7 +61,7 @@ public class CSVConsumer {
                 System.out.println("Arquivos a importar:");
                 for (int i = 1; i < 4; i++) {
                     for (int j = 1; j < 4; j++) {
-                        String filePath = "c:\\ftp\\arquivo_" + j + "_legado_" + i + ".csv";
+                        String filePath = "c:\\ftp\\legado_" + i + "_arquivo_" + j + ".csv";
                         files.add(filePath);
                         System.out.println(filePath);
                     }
