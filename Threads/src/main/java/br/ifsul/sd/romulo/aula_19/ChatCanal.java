@@ -70,7 +70,7 @@ public class ChatCanal extends Thread {
         String msg;
         msg = recebeMsg(in);
         
-        if (!msg.isEmpty() && !msg.isBlank()) {
+        if (!msg.isEmpty()) {
             msg = nome + ": " + msg + "\n\r";
             enviaMsg(out, msg);
         }
