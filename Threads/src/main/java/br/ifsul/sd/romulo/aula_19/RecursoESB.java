@@ -23,14 +23,17 @@ public class RecursoESB extends Thread {
 
     public static final int TIPO_CLIENTE = 0;
     public static final int TIPO_GERENTE = 1;
-    public static final int TIPO_PRODUTOR = 2;    
-    
+    public static final int TIPO_PRODUTOR = 2;
+
     protected Socket socket;
     protected String message;
+    protected int tipo;
+    protected boolean emExecucao = true;
 
-    public RecursoESB(String message, Socket socket) {
+    public RecursoESB(String message, Socket socket, int tipo) {
         this.socket = socket;
         this.message = message;
+        this.tipo = tipo;        
     }
 
     public RecursoESB(Socket socket) {
@@ -48,6 +51,7 @@ public class RecursoESB extends Thread {
     @Override
     public void run() {
         try {
+            this.emExecucao = true;
             System.out.println("Cliente conectado: " + socket.getInetAddress().getHostAddress());
 
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -60,6 +64,11 @@ public class RecursoESB extends Thread {
 
                 String msgCliente = in.readLine();
                 System.out.println("Msg recebida de cliente: " + msgCliente);
+                
+                if (msgCliente == null) {
+                    continue;
+                }
+                
                 if (msgCliente.startsWith("TESTE")) {
                     out.write("Servidor esta OK! \t" + new Date() + "\n\n\r-> ");
                 } else if (msgCliente.startsWith("CHAT")) {
@@ -104,6 +113,14 @@ public class RecursoESB extends Thread {
 
     public void setSocket(Socket socket) {
         this.socket = socket;
+    }
+
+    public int getTipo() {
+        return tipo;
+    }
+
+    public boolean isEmExecucao() {
+        return emExecucao;
     }
 
 }

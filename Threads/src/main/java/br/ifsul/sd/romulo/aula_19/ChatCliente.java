@@ -25,7 +25,7 @@ public class ChatCliente extends RecursoESB {
     private String nomeCliente;
 
     public ChatCliente(String message, Socket socket) {
-        super(message, socket);
+        super(message, socket, RecursoESB.TIPO_CLIENTE);
     }
 
     @Override
@@ -73,6 +73,7 @@ public class ChatCliente extends RecursoESB {
             out.flush();
             Thread.sleep(2000);
             socket.close();
+            emExecucao = false;
         } else {
             out.write("\n\r-> " + this.getClass().getSimpleName() + " - " + msg + " - Comando nao encontrado\n" + ConexaoCliente.PROMPT);
         }

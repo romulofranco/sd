@@ -46,7 +46,7 @@ public class ExecutaFilaChat extends ExecutaFila {
                 filaCliente.remove(0);
                 filaGerente.remove(0);
             }
-            Util.aguardar(5000);
+            Util.aguardar(3000);
         }
     }
 }

@@ -5,6 +5,7 @@
  */
 package br.ifsul.sd.romulo.aula_19;
 
+import br.ifsul.sd.romulo.aula_12.Util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -21,74 +22,54 @@ import java.util.logging.Logger;
  */
 public class Produtor extends RecursoESB {
 
-    private Socket socket;
-    private String message;
-    
-
     public Produtor(String message, Socket socket) {
-        super(message, socket);
+        super(message, socket, RecursoESB.TIPO_PRODUTOR);
     }
 
-    
     @Override
     public void run() {
         try {
-            System.out.println("Cliente conectado: " + socket.getInetAddress().getHostAddress());
+            System.out.println("Produtor conectado: " + socket);
 
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-            out.write("*** Seja bem vindo, envie o comando ou digite ajuda para iniciar ***\n\n\r-> ");
+            out.write("Aguarde PRODUTOR - servidor ira atender sua requisicao\n" + ConexaoCliente.PROMPT);
             out.flush();
 
-            int gerente = 0;
-            boolean cliente = false;
-
-            String nomeGerente = "";
-            String msgWelcome = "";
             while (true) {
 
-                String msgCliente = in.readLine();
-                System.out.println("Msg recebida de cliente: " + msgCliente);
+                if (in.ready()) {
+                    String msg = in.readLine();
+                    System.out.println("Produtor Thread " + this.getName() + " - Recebida: " + msg);
+                    parserProtocolo(msg, out);
 
-                if (gerente == 1) {
-                    nomeGerente = msgCliente;
-                    out.write("Entre com msg de boas vindas: ");
-                    gerente++;
+                    Util.aguardar(1000);
+                    emExecucao = false;
                 }
-                
-                if (gerente == 2) {
-                    msgWelcome = msgCliente;
-                    out.append("Confirme os dados [S|n] \nNome: " + nomeGerente + " \nMensagem: " + msgWelcome);
-                    gerente++;
-                }
-                if (gerente ==3 ){
-                    if (msgCliente.startsWith("S")) {
-                        
-                    }
-                }
-                if (msgCliente.startsWith("TESTE")) {
-                    out.write("Servidor esta OK! \t" + new Date() + "\n\n\r-> ");
-                }  else if (msgCliente.contains("sair")) {
-                    out.write("OK Servidor encerrando sua conexao! Tchau...");
-                    out.flush();
-                    Thread.sleep(2000);
-                    socket.close();
-                } else {
-                    out.write("Comando não encontrado\n");
-                }
-                out.flush();
+//                socket.close();
             }
+
         } catch (IOException e) {
             System.out.println(e);
+            e.printStackTrace();
         } catch (InterruptedException ex) {
             Logger.getLogger(Produtor.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                socket.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Produtor.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            ex.printStackTrace();
+        }
+    }
+
+    private void parserProtocolo(String msg, BufferedWriter out) throws InterruptedException, IOException {
+
+        if (msg.startsWith("teste")) {
+            out.write("Servidor esta OK! \t" + new Date() + "\n\n\r-> ");
+        } else if (msg.contains("sair")) {
+            out.write("OK Servidor encerrando sua conexao! Tchau...");
+            out.flush();
+            Thread.sleep(2000);
+            socket.close();
+        } else {
+            out.write("\n\r-> " + this.getClass().getSimpleName() + " - " + msg + " - Comando nao encontrado\n" + ConexaoCliente.PROMPT);
         }
     }
 }

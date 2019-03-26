@@ -5,7 +5,6 @@
  */
 package br.ifsul.sd.romulo.aula_19;
 
-import br.ifsul.sd.romulo.aula_12.Util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class ChatGerente extends RecursoESB {
     private String msgBoasVindas;
 
     public ChatGerente(String message, Socket socket) {
-        super(message, socket);
+        super(message, socket, RecursoESB.TIPO_PRODUTOR);
     }
 
     @Override
@@ -79,6 +78,7 @@ public class ChatGerente extends RecursoESB {
                     out.flush();
                     Thread.sleep(2000);
                     socket.close();
+                    emExecucao = false;
                 } else {
                     out.write("\n\r-> " + this.getClass().getSimpleName() + " - " + msgCliente + " - Comando nao encontrado\n" + ConexaoCliente.PROMPT);
                 }

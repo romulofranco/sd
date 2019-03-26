@@ -5,8 +5,6 @@
  */
 package br.ifsul.sd.romulo.aula_12;
 
-import br.ifsul.sd.romulo.aula_19.ChatCliente;
-import br.ifsul.sd.romulo.aula_19.ChatGerente;
 import br.ifsul.sd.romulo.aula_19.RecursoESB;
 import java.util.List;
 
@@ -36,9 +34,21 @@ public class ExecutaFila extends Thread {
         while (true) {
             if (!fila.isEmpty()) {
                 System.out.println("Recurso: " + fila.get(0).toString() + " Tamanho: " + fila.size());
-                RecursoESB recurso = fila.get(0);
-                if (!recurso.isAlive()) {
-                    recurso.start();
+                for (int i = 0; i < fila.size(); i++) {
+                    RecursoESB recurso = fila.get(i);
+                    if (!recurso.getState().equals(Thread.State.TERMINATED)) {
+                        try {
+                            if (recurso.isEmExecucao()) {
+                                try {
+                                    recurso.start();
+                                } catch (Exception e) {
+                                    fila.remove(i);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
             Util.aguardar(3000);

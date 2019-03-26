@@ -5,9 +5,17 @@
  */
 package br.ifsul.sd.romulo.threads;
 
+import br.ifsul.sd.romulo.aula_26.ArquivoFTP;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
 
 /**
  *
@@ -28,4 +36,6 @@ public class Util {
             Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+   
 }

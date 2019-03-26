@@ -58,7 +58,7 @@ public class ConexaoCliente extends RecursoESB {
             out.write("*** Seja bem vindo, envie o comando ou digite ajuda para iniciar ***\n\n\r-> ");
             out.flush();
 
-            while (this.isAlive()) {                
+            while (this.isAlive()) {
                 String msgCliente = in.readLine();
                 System.out.println("Comando recebido: " + msgCliente);
 
@@ -96,8 +96,8 @@ public class ConexaoCliente extends RecursoESB {
             this.insereFila(new ChatGerente(msgCliente, this.socket));
             return ENCERRA;
         } else if (msgCliente.startsWith(PROTOCOL_PRODUTOR)) {
-            //insere produtor na fila
-            this.insereFila(new RecursoESB(msgCliente, this.socket));
+            //insere produtor na fila                     
+            this.insereFila(new Produtor(msgCliente, this.socket));
             return ENCERRA;
         } else if (msgCliente.contains(PROTOCOL_STATUS)) {
             out.write("Servidor Admin Console\r\n Endereco: localhost:1234\r\n Num. Conexoes: 5\r\n Num. Arquivos FTP: 12\n\r Servicos ativos: Chat | FTP | Console Admin\n\n\r-> ");
