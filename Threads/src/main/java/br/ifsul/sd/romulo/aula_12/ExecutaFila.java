@@ -42,7 +42,7 @@ public class ExecutaFila extends Thread {
                                 try {
                                     recurso.start();
                                 } catch (Exception e) {
-                                    fila.remove(i);
+//                                    fila.remove(i);
                                 }
                             }
                         } catch (Exception e) {
