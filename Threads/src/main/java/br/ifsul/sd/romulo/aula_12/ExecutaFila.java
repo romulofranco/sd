@@ -42,7 +42,9 @@ public class ExecutaFila extends Thread {
                                 try {
                                     recurso.start();
                                 } catch (Exception e) {
-                                    fila.remove(i);
+                                    if (recurso.getTipo() == RecursoESB.TIPO_PRODUTOR) {
+                                        fila.remove(i);
+                                    }
                                 }
                             }
                         } catch (Exception e) {

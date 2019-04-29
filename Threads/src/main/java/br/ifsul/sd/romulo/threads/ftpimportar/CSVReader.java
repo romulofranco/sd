@@ -7,38 +7,56 @@ package br.ifsul.sd.romulo.threads.ftpimportar;
 
 import java.io.*;
 
-class CSVReader implements Runnable
-{
-    static int lineCount = 1;
-    static int limit = 3000;
-    
+class CSVReader implements Runnable {
+
+    private long startLine = 1;
+    private long offset = 3000;
+    private long tamLine = 0;
+    private long limit = 0;
+    ;
+
     BufferedReader CSVBufferedReader;
-    
-    public CSVReader(){} // default constructor
-    
-    public CSVReader(BufferedReader br){
+
+    public CSVReader() {
+    } // default constructor
+
+    public CSVReader(BufferedReader br) {
         this.CSVBufferedReader = br;
     }
-    
-    private synchronized void readCSV(){
-        System.out.println("Current thread "+Thread.currentThread().getName());
+
+    public CSVReader(BufferedReader br, long startLine, long offset, long tamLine) {
+        this.CSVBufferedReader = br;
+        this.startLine = startLine;
+        this.offset = offset;
+        this.tamLine = tamLine;
+        this.limit = startLine + offset;
+    }
+
+    private synchronized void readCSV() {
+//        System.out.println("Current thread " + Thread.currentThread().getName());
         String line;
+        long countLine = startLine;
         try {
-            while((line = CSVBufferedReader.readLine()) != null){
-                System.out.println(line);
-                lineCount ++;
-//                if(lineCount >= limit){
-//                    break;
-//                }            
+            CSVBufferedReader.skip(startLine * tamLine);
+            String lastLine = "";
+            
+            while ((line = CSVBufferedReader.readLine()) != null) {
+                lastLine = line;
+                countLine++;
+                if (countLine >= limit) {
+                    System.out.println(Thread.currentThread().getName() + " Ultima linha processada: " + lastLine);
+                    break;
+                }
             }
-            
+
             CSVConsumer.COUNT_THREAD--;
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }       
-    public void run() { 
+    }
+
+    public void run() {
         readCSV();
     }
 }

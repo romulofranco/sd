@@ -129,7 +129,7 @@ public class MonitoramentoPasta extends Thread {
     }
 
     public static void main(String args[]) {
-        MonitoramentoPasta monitoramentoPasta = new MonitoramentoPasta("c:\\ftp\\", "localhost", "romulo", "123", 21);
+            MonitoramentoPasta monitoramentoPasta = new MonitoramentoPasta("c:\\ftp\\", "localhost", "romulo", "123", 21);
         monitoramentoPasta.start();
 
     }

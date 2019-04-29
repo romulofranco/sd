@@ -35,8 +35,9 @@ public class ChatCanal extends Thread {
     }
     
     @Override
-    public void run() {
+    public synchronized  void run() {
         try {
+            
             String iniciar = "Iniciando chat entre\n\rCliente: " + recursoCliente + "\n\rGerente: " + recursoGerente;
             System.out.println(iniciar);
             
@@ -70,7 +71,7 @@ public class ChatCanal extends Thread {
         String msg;
         msg = recebeMsg(in);
         
-        if (!msg.isEmpty() && !msg.isBlank()) {
+        if (!msg.isEmpty() ) {
             msg = nome + ": " + msg + "\n\r";
             enviaMsg(out, msg);
         }
