@@ -1,1 +1,1 @@
-# Exemplos que serão usados na Disciplina de Sistemas Distribuídos (Distributed Systems)
+Exemplos que serão usados na Disciplina de Sistemas Distribuídos (Distributed Systems)
