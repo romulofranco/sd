@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class CSVConsumer {
 
     public static int COUNT_THREAD = 0;
-    public static long MAX_THREAD_PER_FILE = 1;
+    public static long MAX_THREAD_PER_FILE = 5;
 
     public List<Thread> threadList = new ArrayList<Thread>();
 
