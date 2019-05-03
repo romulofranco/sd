@@ -5,7 +5,7 @@
  */
 package br.ifsul.sd.romulo.threads.ftpimportar;
 
-import br.ifsul.sd.romulo.threads.Util;
+import br.ifsul.sd.romulo.aula_12.Util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

@@ -5,7 +5,8 @@
  */
 package br.ifsul.sd.romulo.aula_26;
 
-import br.ifsul.sd.romulo.threads.Util;
+
+import br.ifsul.sd.romulo.aula_12.Util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;

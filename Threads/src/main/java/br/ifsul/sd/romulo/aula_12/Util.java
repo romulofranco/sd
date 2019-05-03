@@ -5,6 +5,10 @@
  */
 package br.ifsul.sd.romulo.aula_12;
 
+import java.sql.Timestamp;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author romulo
@@ -19,4 +23,19 @@ public class Util {
         }
     }
 
+    public static long getTimestamp() {
+        Timestamp t = new Timestamp(System.currentTimeMillis());
+//        System.out.println("Tempo: " + t.getTime());
+        return t.getTime();
+    }
+
+    public static void waitALittle(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Util.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+  
 }
