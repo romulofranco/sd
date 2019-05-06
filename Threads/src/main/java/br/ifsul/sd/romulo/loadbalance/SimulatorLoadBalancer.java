@@ -17,28 +17,31 @@ public class SimulatorLoadBalancer extends Thread {
 
     private static final int METHOD_ROUNDROBIN = 1;
     private static final int METHOD_LEAST_CONNECTIONS = 2;
+    private static final int METHOD_RANDOM = 3;
 
     private int numServers = 5;
     private int numClients = 50;
     private int payload = 5;
+    private int intervalTimeClient = 50;
     /*5 x 32bytes */
     private int initialServersPort = 1000;
     private int method = 1;
-    private int intervalCallServers = 1000;
-    /* milliseconds */
 
+    /* milliseconds */
     private List<SimulateServer> servers;
     private List<SimulateClient> clients;
     private List<Integer> ports;
     private int currentPort;
 
-    public SimulatorLoadBalancer(int numServers, int numClients, int payload, int initialServersPort, int method, int intervalCallServers) {
+    private MonitorSimulator monitorSimulator;
+
+    public SimulatorLoadBalancer(int numServers, int numClients, int payload, int initialServersPort, int method, int intervalTimeClient) {
         this.numServers = numServers;
         this.numClients = numClients;
         this.payload = payload;
         this.initialServersPort = initialServersPort;
         this.method = method;
-        this.intervalCallServers = intervalCallServers;
+        this.intervalTimeClient = intervalTimeClient;
 
         servers = new ArrayList<SimulateServer>();
         clients = new ArrayList<SimulateClient>();
@@ -49,19 +52,42 @@ public class SimulatorLoadBalancer extends Thread {
     }
 
     public int getPort() {
+        long initialTime = Util.getTimestamp();
         int portReturn = 0;
 
-        if (this.method == METHOD_ROUNDROBIN) {
-            if (currentPort == ports.size()) {
-                currentPort = 1;
-                portReturn = 0;
-            } else {
-                portReturn = currentPort;
-                currentPort++;
-            }
+        switch (this.method) {
+            case METHOD_ROUNDROBIN:
+                portReturn = roundRobin();
+                break;
+            case METHOD_LEAST_CONNECTIONS:
+                portReturn = this.leastConnection();
+                break;
+            default:
+                portReturn = this.random();
+                break;
+        }
 
-        } else if (this.method == METHOD_LEAST_CONNECTIONS) {
+        long finalTime = Util.getTimestamp();
+        System.out.println("Tempo metodo + port : " + (finalTime - initialTime) + ": " + portReturn);
+        return portReturn;
+    }
 
+    private int random() {
+        return 1000;
+    }
+
+    private int leastConnection() {
+        return 1000;
+    }
+
+    private int roundRobin() {
+        int portReturn;
+        if (currentPort == ports.size()) {
+            currentPort = 1;
+            portReturn = 0;
+        } else {
+            portReturn = currentPort;
+            currentPort++;
         }
         return ports.get(portReturn);
     }
@@ -85,26 +111,58 @@ public class SimulatorLoadBalancer extends Thread {
             ss.start();
         }
 
-        Util.aguardar(500);
+        monitorSimulator.start();
 
-        clients.forEach((client) -> {
-            client.start();
-        });
+        System.out.println("Aguardando carga total de servidores...");
 
-        System.out.println("Server\t\t\tPort\t\tCurrent\tTotal\tTime per client(ms)\tTotal Time ");
+        while (true) {
+            if (monitorSimulator.getCompleted() == servers.size()) {
+                break;
+            }
+
+            Util.aguardar(100);
+        }
+
+        System.out.println("Todos servidores lançados...");
+        int j = 0;
+        for (int i = 0; i < numClients; i++) {
+            SimulateClient sc = clients.get(i);
+            sc.start();
+            j++;
+            if (j == intervalTimeClient) {
+                j = 0;
+                Util.aguardar(1000);
+            }
+            
+            Util.aguardar(50);
+        }
+
+        System.out.println("Todos clientes iniciados...");
+
+        while (monitorSimulator.isRunning()) {
+            System.out.println("Server\t\t#Port\t\t #Current\tCompleted\t #Requests \t#Failures \tTime/cli(ms)\tTotal Time ");
+            Util.aguardar(5000);
+        }
+
+        System.out.println("\n\nSimulação encerrada com sucesso!");
+        for (int i = 0; i < numServers; i++) {
+            SimulateServer ss = servers.get(i);
+            ss.interrupt();
+
+        }
 
     }
 
     @Override
     public void run() {
-        MonitorSimulator ms = new MonitorSimulator(servers, clients);
-        ms.start();
+        monitorSimulator = new MonitorSimulator(servers, clients);
         this.startSimulation();
 
     }
 
     public static void main(String args[]) {
-        SimulatorLoadBalancer simulator = new SimulatorLoadBalancer(200, 5000, 5, 1000, METHOD_ROUNDROBIN, 0);
+        SimulatorLoadBalancer simulator = new SimulatorLoadBalancer(10, 5000, 5, 
+                                    1000, METHOD_ROUNDROBIN, 1000);
         simulator.start();
     }
 

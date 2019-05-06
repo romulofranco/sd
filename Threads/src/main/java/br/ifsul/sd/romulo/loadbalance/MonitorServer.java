@@ -18,6 +18,7 @@ public class MonitorServer extends Thread {
     private String serverName;
     private int port;
     private SimulateServer ss;
+    private boolean running = true;
 
     public MonitorServer(SimulateServer ss) {
         this.tasks = ss.getTasks();
@@ -27,20 +28,26 @@ public class MonitorServer extends Thread {
     }
 
     private synchronized void monitor() {
-        long timeElapsed = 0;
-        long currentConnections = 0;
-        long totalTime = 0;
-        long keepRunning = 0;
+        long timeElapsed;
+        long currentConnections;
+        long totalRequests;
+        long totalTime;
+        long keepRunning;
+        long totalFailures;
 
         while (true) {
             timeElapsed = 0;
-            currentConnections = 0;
+            currentConnections = 1;
             totalTime = 0;
             keepRunning = 0;
+            totalRequests = 0;
+            totalFailures = 0;
 
             for (SimulateTask st : tasks) {
                 if (!st.isAlive()) {
                     totalTime = totalTime + st.getTimeElapsed();
+                    totalRequests = totalRequests + st.getNumberRequests();
+                    totalFailures = totalFailures + st.getNumberFailures();
                     keepRunning++;
                 } else {
                     currentConnections++;
@@ -50,16 +57,18 @@ public class MonitorServer extends Thread {
             if (tasks.size() > 0) {
                 timeElapsed = totalTime / tasks.size();
             }
-            
+
             if (keepRunning >= tasks.size()) {
-//                ss.setRunning(false);
-//                break;
+                ss.setRunning(false);
+                //break;
             }
 
-            System.out.println(serverName + "\t\t\t" + port + "\t\t" + currentConnections + "\t" + tasks.size() + "\t" + timeElapsed + "\t" + totalTime);
-            Util.aguardar(2000);
+            System.out.println(serverName + "\t\t\t" + port + "\t\t" + currentConnections + "\t" + tasks.size() + "\t" + totalRequests + "\t" + totalFailures + "\t" + timeElapsed + "\t" + totalTime);
+            Util.aguardar(3000);
 
-            
+            if (!running) {
+                break;
+            }
 
         }
     }
@@ -68,4 +77,13 @@ public class MonitorServer extends Thread {
     public void run() {
         this.monitor();
     }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+
 }

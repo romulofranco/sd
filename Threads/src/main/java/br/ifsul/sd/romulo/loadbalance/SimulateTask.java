@@ -6,7 +6,6 @@
 package br.ifsul.sd.romulo.loadbalance;
 
 import br.ifsul.sd.romulo.aula_12.Util;
-import br.ifsul.sd.romulo.aula_19.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -14,10 +13,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -32,7 +27,9 @@ public class SimulateTask extends Thread {
     
     private boolean running;
     private long timeElapsed;
-
+    private long numberRequests = 0;
+    private long numberFailures = 0;
+    
     public SimulateTask(Socket socket) {
         this.socket = socket;
         this.running = true;
@@ -52,8 +49,13 @@ public class SimulateTask extends Thread {
 
             while (true) {
                 String msgCliente = in.readLine();
-//                System.out.println("Client: " + msgCliente);
-
+                numberRequests++;
+//                System.out.println("Client: " + msgCliente +  " - Requests: " +numberRequests);
+    
+                int timeWait  = Util.getRandomNumberInRange(50, 200);
+//                System.out.println("Task time: " + timeWait);
+                Util.aguardar(timeWait);
+                
                 if (msgCliente.startsWith(SAIR)) {
                     this.interrupt();
                     break;
@@ -66,8 +68,13 @@ public class SimulateTask extends Thread {
             
             long finalTime = Util.getTimestamp();
             timeElapsed = finalTime - initialTime;
+            
+            running = false;
         } catch (IOException e) {
-            System.out.println(e);
+            timeElapsed = 0;
+            numberFailures=6-numberRequests;
+//            System.out.println("Falha SimulateTask: " + socket +  " Failures: " + numberFailures +  " / " + timeElapsed);
+            
         }
     }
 
@@ -85,6 +92,22 @@ public class SimulateTask extends Thread {
 
     public void setTimeElapsed(long timeElapsed) {
         this.timeElapsed = timeElapsed;
+    }
+
+    public long getNumberRequests() {
+        return numberRequests;
+    }
+
+    public void setNumberRequests(long numberRequests) {
+        this.numberRequests = numberRequests;
+    }
+
+    public long getNumberFailures() {
+        return numberFailures;
+    }
+
+    public void setNumberFailures(long numberFailures) {
+        this.numberFailures = numberFailures;
     }
 
 }

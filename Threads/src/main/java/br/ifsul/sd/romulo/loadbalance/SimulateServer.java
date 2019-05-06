@@ -6,6 +6,7 @@
 package br.ifsul.sd.romulo.loadbalance;
 
 import br.ifsul.sd.romulo.aula_12.Util;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,10 @@ public class SimulateServer extends Thread {
     private int totalConnectionsReceived = 0;
     private long timeForEachTask = 0;
     private String serverName;
-    private boolean running;
-    private int completedLoad;
+    private boolean running  = true;
+    private int completedLoad = 0;
+    private boolean completedLaunch;
+    private MonitorServer monitorServer;
 
     public SimulateServer(String name, int port) {
         this.port = port;
@@ -38,22 +41,25 @@ public class SimulateServer extends Thread {
             // Instancia o ServerSocket ouvindo a porta 12345
             ServerSocket servidor = new ServerSocket(port);
             System.out.println(serverName + " listening on " + port);
+            completedLaunch = true;
+            monitorServer.start();
             while (true) {
                 SimulateTask st = new SimulateTask(servidor.accept());
                 st.start();
                 tasks.add(st);
                 totalConnectionsReceived++;
+                
                 Util.aguardar(100);
-                completedLoad = 1;
-                if (!running) {
-                    System.out.println(serverName + " " + port + " has been done");        
-                    return;
-                }
+                
+//                if (!running) {
+//                    System.out.println(serverName + " " + port + " has been done");        
+//                    return;
+//                }
             }
-        } catch (Exception e) {
-            System.out.println("Erro: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Falha SimulateServer: " + e.getMessage());
             running = false;
-            completedLoad = 2;
+            totalConnectionsReceived = -1;
         } finally {
         }
 
@@ -61,8 +67,8 @@ public class SimulateServer extends Thread {
 
     @Override
     public void run() {
-        MonitorServer ms = new MonitorServer(this);
-        ms.start();
+        monitorServer = new MonitorServer(this);
+
         this.iniciarServer();
     }
 
@@ -111,6 +117,29 @@ public class SimulateServer extends Thread {
 
     public void setCompletedLoad(int completedLoad) {
         this.completedLoad = completedLoad;
+    }
+
+    public boolean isCompletedLaunch() {
+        return completedLaunch;
+    }
+
+    public void setCompletedLaunch(boolean completedLaunch) {
+        this.completedLaunch = completedLaunch;
+    }
+
+    @Override
+    public void interrupt() {
+        this.monitorServer.setRunning(false);
+        super.interrupt();
+
+    }
+
+    public int getTotalConnectionsReceived() {
+        return totalConnectionsReceived;
+    }
+
+    public void setTotalConnectionsReceived(int totalConnectionsReceived) {
+        this.totalConnectionsReceived = totalConnectionsReceived;
     }
 
 }

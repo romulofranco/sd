@@ -61,10 +61,22 @@ public class SimulateClient extends Thread {
     }
 
     public void handleConnectionFailures() {
+        oldPort = port;
         port = simulator.getPort();
-        System.out.println("Port: " + port);
-        tries++;
-        this.run();
+        if (oldPort == port) {
+            port = simulator.getPort();
+            if (oldPort == port) {
+                tries++;
+                return;
+            } else {
+                tries++;
+                this.run();
+            }
+        } else {
+            tries++;
+            this.run();
+        }
+        //  System.out.println("Port: " + port);
 
     }
 
@@ -106,8 +118,8 @@ public class SimulateClient extends Thread {
             running = false;
 
         } catch (IOException e) {
-            System.out.println("Client " + port + " - " + e);
-            if (tries < 3) {
+            System.out.println("Falha SimulateClient " + port + " - " + e);
+            if (tries < 10) {
                 this.handleConnectionFailures();
             }
 
@@ -130,6 +142,6 @@ public class SimulateClient extends Thread {
 
     public int getTries() {
         return tries;
-    }    
+    }
 
 }
