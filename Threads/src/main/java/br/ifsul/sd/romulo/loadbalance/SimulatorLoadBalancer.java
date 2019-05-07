@@ -32,6 +32,7 @@ public class SimulatorLoadBalancer extends Thread {
     private List<SimulateClient> clients;
     private List<Integer> ports;
     private int currentPort;
+    private long timeElapsedForDistribution = 0;
 
     private MonitorSimulator monitorSimulator;
 
@@ -68,7 +69,8 @@ public class SimulatorLoadBalancer extends Thread {
         }
 
         long finalTime = Util.getTimestamp();
-        System.out.println("Tempo metodo + port : " + (finalTime - initialTime) + ": " + portReturn);
+        timeElapsedForDistribution = timeElapsedForDistribution + (finalTime - initialTime); 
+        System.out.println("Tempo metodo + port : " + timeElapsedForDistribution + ": " + portReturn);
         return portReturn;
     }
 
@@ -161,8 +163,8 @@ public class SimulatorLoadBalancer extends Thread {
     }
 
     public static void main(String args[]) {
-        SimulatorLoadBalancer simulator = new SimulatorLoadBalancer(10, 5000, 5, 
-                                    1000, METHOD_ROUNDROBIN, 1000);
+        SimulatorLoadBalancer simulator = new SimulatorLoadBalancer(10, 40000, 5, 
+                                    1000, METHOD_ROUNDROBIN, 4000);
         simulator.start();
     }
 

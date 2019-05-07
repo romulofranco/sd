@@ -6,6 +6,7 @@
 package br.ifsul.sd.romulo.aula_12;
 
 import java.sql.Timestamp;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +20,7 @@ public class Util {
         try {
             Thread.sleep(milisegundos);
         } catch (InterruptedException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
     }
 
@@ -37,5 +38,14 @@ public class Util {
         }
     }
 
-  
+    public static int getRandomNumberInRange(int min, int max) {
+
+        if (min >= max) {
+            return 1;
+        }
+
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
+    }
+
 }
