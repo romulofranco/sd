@@ -35,6 +35,7 @@ public class SimulatorLoadBalancer extends Thread {
     private long timeElapsedForDistribution = 0;
 
     private MonitorSimulator monitorSimulator;
+    private MonitorLeastConn monitorLeastConn;
 
     public SimulatorLoadBalancer(int numServers, int numClients, int payload, int initialServersPort, int method, int intervalTimeClient) {
         this.numServers = numServers;
@@ -69,17 +70,21 @@ public class SimulatorLoadBalancer extends Thread {
         }
 
         long finalTime = Util.getTimestamp();
-        timeElapsedForDistribution = timeElapsedForDistribution + (finalTime - initialTime); 
-        System.out.println("Tempo metodo + port : " + timeElapsedForDistribution + ": " + portReturn);
+        timeElapsedForDistribution = timeElapsedForDistribution + (finalTime - initialTime);
+//        System.out.println("Tempo metodo + port : " + timeElapsedForDistribution + ": " + portReturn);
         return portReturn;
     }
 
     private int random() {
-        return 1000;
+        int initialPort = ports.get(0);
+        int finalPort = ports.get(ports.size() - 1);
+        int portReturn = Util.getRandomNumberInRange(initialPort, finalPort);
+//        System.out.println("Random Port: " + portReturn);
+        return portReturn;
     }
 
     private int leastConnection() {
-        return 1000;
+        return this.ports.get(monitorLeastConn.getLeastServerPort());
     }
 
     private int roundRobin() {
@@ -135,7 +140,7 @@ public class SimulatorLoadBalancer extends Thread {
                 j = 0;
                 Util.aguardar(1000);
             }
-            
+
             Util.aguardar(50);
         }
 
@@ -158,14 +163,17 @@ public class SimulatorLoadBalancer extends Thread {
     @Override
     public void run() {
         monitorSimulator = new MonitorSimulator(servers, clients);
+        monitorLeastConn = new MonitorLeastConn(servers);
+        monitorLeastConn.start();
         this.startSimulation();
 
     }
 
     public static void main(String args[]) {
-        SimulatorLoadBalancer simulator = new SimulatorLoadBalancer(10, 40000, 5, 
-                                    1000, METHOD_ROUNDROBIN, 4000);
+        SimulatorLoadBalancer simulator = new SimulatorLoadBalancer(1, 500, 20,
+                1000, METHOD_RANDOM, 5);
         simulator.start();
+
     }
 
 }

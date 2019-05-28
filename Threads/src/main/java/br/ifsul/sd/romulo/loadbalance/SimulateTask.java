@@ -30,8 +30,16 @@ public class SimulateTask extends Thread {
     private long numberRequests = 0;
     private long numberFailures = 0;
     
+    private Cache cache;
+    
     public SimulateTask(Socket socket) {
         this.socket = socket;
+        this.running = true;
+    }
+    
+    public SimulateTask(Socket socket, Cache cache) {
+        this.socket = socket;
+        this.cache = cache;
         this.running = true;
     }
 

@@ -23,6 +23,8 @@ public class MonitorSimulator extends Thread {
     private int numClientsCompleted = 0;
     private int numClientsRecovered = 0;
     private int numClientsLostConn = 0;
+    
+    private int leastConnServer = 0;
 
     private boolean running = true;
 
@@ -53,6 +55,8 @@ public class MonitorSimulator extends Thread {
 
                 if (ss.getTotalConnectionsReceived() > 0) {
                     //if (ss.isRunning()) {
+                    
+                    
                     numServerCompletedLoad = numServerCompletedLoad + ss.getTotalConnectionsReceived();
                     //}
                 } else if (ss.getTotalConnectionsReceived() == -1) {
@@ -152,6 +156,10 @@ public class MonitorSimulator extends Thread {
 
     public int getCompleted() {
         return this.numServerCompletedLaunch + this.numServerFailure;
+    }
+
+    public int getLeastConnServer() {
+        return leastConnServer;
     }
 
 }

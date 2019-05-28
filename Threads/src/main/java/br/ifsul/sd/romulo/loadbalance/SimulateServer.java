@@ -9,6 +9,7 @@ import br.ifsul.sd.romulo.aula_12.Util;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -23,10 +24,12 @@ public class SimulateServer extends Thread {
     private int totalConnectionsReceived = 0;
     private long timeForEachTask = 0;
     private String serverName;
-    private boolean running  = true;
+    private boolean running = true;
     private int completedLoad = 0;
     private boolean completedLaunch;
     private MonitorServer monitorServer;
+
+    private Cache cache;
 
     public SimulateServer(String name, int port) {
         this.port = port;
@@ -34,6 +37,7 @@ public class SimulateServer extends Thread {
         this.serverName = name;
         this.running = true;
         this.completedLoad = 0;
+        this.cache = new Cache();
     }
 
     public void iniciarServer() {
@@ -48,9 +52,9 @@ public class SimulateServer extends Thread {
                 st.start();
                 tasks.add(st);
                 totalConnectionsReceived++;
-                
+
                 Util.aguardar(100);
-                
+
 //                if (!running) {
 //                    System.out.println(serverName + " " + port + " has been done");        
 //                    return;
@@ -142,4 +146,7 @@ public class SimulateServer extends Thread {
         this.totalConnectionsReceived = totalConnectionsReceived;
     }
 
+    public synchronized long getCurrentConn() {
+        return monitorServer.getCurrentConnections();
+    }
 }

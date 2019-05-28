@@ -6,6 +6,8 @@
 package br.ifsul.sd.romulo.threads.ftpimportar;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 class CSVReader implements Runnable {
 
@@ -39,7 +41,7 @@ class CSVReader implements Runnable {
         try {
             CSVBufferedReader.skip(startLine * tamLine);
             String lastLine = "";
-            
+
             while ((line = CSVBufferedReader.readLine()) != null) {
                 lastLine = line;
                 countLine++;
@@ -54,6 +56,28 @@ class CSVReader implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Map<Integer, String> readCSV(boolean withoutOffset) throws IOException {
+
+        String line;
+        Map<Integer, String> cache = new HashMap<>();
+
+        try {
+
+            while ((line = CSVBufferedReader.readLine()) != null) {
+                String[] array = line.split(";");
+                cache.put(Integer.parseInt(array[0]), array[1]);
+            }
+
+            return cache;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            CSVBufferedReader.close();
+        }
+        return null;
     }
 
     public void run() {

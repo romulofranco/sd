@@ -9,6 +9,7 @@ import br.ifsul.sd.romulo.aula_12.Util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,6 +38,13 @@ public class CSVConsumer {
             threadList.add(t);
             COUNT_THREAD++;
         }
+    }
+
+    public Map<Integer, String> createCacheMap(String file) throws InterruptedException, IOException {
+        String pathToCSV = file;
+        CSVResourceHandler csvResHandler = new CSVResourceHandler(pathToCSV);
+        CSVReader reader = new CSVReader(csvResHandler.getCSVFileHandler(), 0, 1000, csvResHandler.getCSVFileHandler().lines().count());
+        return reader.readCSV(true);
     }
 
     public void startThreads() {

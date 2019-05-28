@@ -19,6 +19,7 @@ public class MonitorServer extends Thread {
     private int port;
     private SimulateServer ss;
     private boolean running = true;
+    private long currentConnections;
 
     public MonitorServer(SimulateServer ss) {
         this.tasks = ss.getTasks();
@@ -29,7 +30,6 @@ public class MonitorServer extends Thread {
 
     private synchronized void monitor() {
         long timeElapsed;
-        long currentConnections;
         long totalRequests;
         long totalTime;
         long keepRunning;
@@ -37,7 +37,7 @@ public class MonitorServer extends Thread {
 
         while (true) {
             timeElapsed = 0;
-            currentConnections = 1;
+            currentConnections = 0;
             totalTime = 0;
             keepRunning = 0;
             totalRequests = 0;
@@ -84,6 +84,10 @@ public class MonitorServer extends Thread {
 
     public void setRunning(boolean running) {
         this.running = running;
+    }
+
+    public long getCurrentConnections() {
+        return currentConnections;
     }
 
 }
