@@ -48,7 +48,7 @@ public class SimulateServer extends Thread {
             completedLaunch = true;
             monitorServer.start();
             while (true) {
-                SimulateTask st = new SimulateTask(servidor.accept());
+                SimulateTask st = new SimulateTask(servidor.accept(), cache);
                 st.start();
                 tasks.add(st);
                 totalConnectionsReceived++;

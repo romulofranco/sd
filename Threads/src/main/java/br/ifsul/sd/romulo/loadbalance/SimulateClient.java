@@ -100,6 +100,7 @@ public class SimulateClient extends Thread {
                 Util.aguardar(50);
                 msgCliente = reader.readLine();
 //                System.out.println("Server: " + msgCliente);
+                simulateCache(writer, reader);
             }
 
             Util.aguardar(50);
@@ -125,6 +126,25 @@ public class SimulateClient extends Thread {
 
         }
 
+    }
+
+    private void simulateCache(BufferedWriter writer, BufferedReader reader) throws IOException {
+        String msgCliente;
+        int randomID = Util.getRandomNumberInRange(0, 10000);
+        writer.write("CACHE-CHECK;" + randomID + "\r\n");
+        writer.flush();
+
+        Util.aguardar(500);
+
+        msgCliente = reader.readLine();
+        if (msgCliente.startsWith("NOTFOUND")) {
+            writer.write("CACHE-STORE;" + randomID + ";" + this.address + "-" + this.port + "\r\n");
+            writer.flush();
+        }
+
+        if (msgCliente.startsWith("FOUND")) {
+            System.out.println("Found in Cache: " + msgCliente);
+        }
     }
 
     public static void main(String args[]) {

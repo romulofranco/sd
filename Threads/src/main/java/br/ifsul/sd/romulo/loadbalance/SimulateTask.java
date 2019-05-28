@@ -24,19 +24,19 @@ public class SimulateTask extends Thread {
 
     public static final String PROMPT = "\n\n\r-> ";
     public static final String SAIR = "sair";
-    
+
     private boolean running;
     private long timeElapsed;
     private long numberRequests = 0;
     private long numberFailures = 0;
-    
+
     private Cache cache;
-    
+
     public SimulateTask(Socket socket) {
         this.socket = socket;
         this.running = true;
     }
-    
+
     public SimulateTask(Socket socket, Cache cache) {
         this.socket = socket;
         this.cache = cache;
@@ -59,11 +59,30 @@ public class SimulateTask extends Thread {
                 String msgCliente = in.readLine();
                 numberRequests++;
 //                System.out.println("Client: " + msgCliente +  " - Requests: " +numberRequests);
-    
-                int timeWait  = Util.getRandomNumberInRange(50, 200);
-//                System.out.println("Task time: " + timeWait);
+
+                int timeWait = Util.getRandomNumberInRange(50, 200);
                 Util.aguardar(timeWait);
-                
+
+                if (msgCliente.startsWith("CACHE-CHECK")) {
+                    String[] msgSplited = msgCliente.split(";");
+                    int id = Integer.parseInt(msgSplited[1]);
+                    if (cache.getValue(id) == null) {
+                        out.write("NOTFOUND\r\n");
+                        out.flush();
+                    } else {
+                        out.write("FOUND;" + cache.getValue(id) + "\r\n");
+                        out.flush();
+                    }
+                }
+
+                if (msgCliente.startsWith("CACHE-STORE")) {
+                    String[] msgSplited = msgCliente.split(";");
+                    int id = Integer.parseInt(msgSplited[1]);
+                    if (cache.getValue(id) == null) {
+                        DatabaseController.getInstance().storeMainCache(id, msgSplited[2], true);
+                    }
+                }
+
                 if (msgCliente.startsWith(SAIR)) {
                     this.interrupt();
                     break;
@@ -73,16 +92,16 @@ public class SimulateTask extends Thread {
                 out.flush();
                 Util.aguardar(50);
             }
-            
+
             long finalTime = Util.getTimestamp();
             timeElapsed = finalTime - initialTime;
-            
+
             running = false;
         } catch (IOException e) {
             timeElapsed = 0;
-            numberFailures=6-numberRequests;
+            numberFailures = 6 - numberRequests;
 //            System.out.println("Falha SimulateTask: " + socket +  " Failures: " + numberFailures +  " / " + timeElapsed);
-            
+
         }
     }
 
