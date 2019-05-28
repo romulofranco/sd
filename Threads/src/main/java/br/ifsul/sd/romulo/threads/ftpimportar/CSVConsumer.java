@@ -43,7 +43,7 @@ public class CSVConsumer {
     public Map<Integer, String> createCacheMap(String file) throws InterruptedException, IOException {
         String pathToCSV = file;
         CSVResourceHandler csvResHandler = new CSVResourceHandler(pathToCSV);
-        CSVReader reader = new CSVReader(csvResHandler.getCSVFileHandler(), 0, 1000, csvResHandler.getCSVFileHandler().lines().count());
+        CSVReader reader = new CSVReader(csvResHandler.getCSVFileHandler(), 0, 5000, csvResHandler.getCSVFileHandler().lines().count());
         return reader.readCSV(true);
     }
 

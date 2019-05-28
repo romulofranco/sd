@@ -58,7 +58,7 @@ public class SimulateTask extends Thread {
             while (true) {
                 String msgCliente = in.readLine();
                 numberRequests++;
-//                System.out.println("Client: " + msgCliente +  " - Requests: " +numberRequests);
+                System.out.println("Client: " + msgCliente + " - Requests: " + numberRequests);
 
                 int timeWait = Util.getRandomNumberInRange(50, 200);
                 Util.aguardar(timeWait);
@@ -68,21 +68,28 @@ public class SimulateTask extends Thread {
                     int id = Integer.parseInt(msgSplited[1]);
                     if (cache.getValue(id) == null) {
                         out.write("NOTFOUND\r\n");
-                        out.flush();
                     } else {
                         out.write("FOUND;" + cache.getValue(id) + "\r\n");
-                        out.flush();
                     }
+                    out.flush();
                 }
 
                 if (msgCliente.startsWith("CACHE-STORE")) {
                     String[] msgSplited = msgCliente.split(";");
                     int id = Integer.parseInt(msgSplited[1]);
                     if (cache.getValue(id) == null) {
+                        cache.store(msgSplited[2], id);
                         DatabaseController.getInstance().storeMainCache(id, msgSplited[2], true);
                     }
+
+                    out.write("CACHE-STORED-OK\r\n");
+                    out.flush();
                 }
 
+                if (msgCliente.startsWith("VER-CACHE")) {
+                    cache.printAllEntries();
+                }
+                
                 if (msgCliente.startsWith(SAIR)) {
                     this.interrupt();
                     break;

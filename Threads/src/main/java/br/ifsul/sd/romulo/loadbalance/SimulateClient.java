@@ -89,29 +89,21 @@ public class SimulateClient extends Thread {
             BufferedReader reader = new BufferedReader(new InputStreamReader(cliente.getInputStream()));
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(cliente.getOutputStream()));
 
-            String strPayload = this.createString();
+            // String strPayload = this.createString();
 //            System.out.println("Payload string: " + strPayload);
             String msgCliente = reader.readLine();
 
-            for (int i = 0; i < payload; i++) {
-                writer.write(strPayload + "\r\n");
-                writer.flush();
-//                System.out.println("Client: " + strPayload + PROMPT);
-                Util.aguardar(50);
-                msgCliente = reader.readLine();
-//                System.out.println("Server: " + msgCliente);
-                simulateCache(writer, reader);
-            }
+            simulateCache(writer, reader);
 
             Util.aguardar(50);
 
             msgCliente = reader.readLine();
-//            System.out.println("Server: " + msgCliente);
+
             writer.write(SAIR + PROMPT);
             writer.flush();
-//            System.out.println("Client: sair");
 
             Util.aguardar(50);
+
             if (tries > 0) {
                 System.out.println("Client recovered and redirected from " + oldPort + " to another port " + port);
             }
@@ -129,22 +121,44 @@ public class SimulateClient extends Thread {
     }
 
     private void simulateCache(BufferedWriter writer, BufferedReader reader) throws IOException {
-        String msgCliente;
+        String msgCliente = "";
         int randomID = Util.getRandomNumberInRange(0, 10000);
-        writer.write("CACHE-CHECK;" + randomID + "\r\n");
+        String msgServer = "CACHE-CHECK;" + randomID + "\r\n";
+        System.out.println("Enviando " + msgServer);
+        writer.write(msgServer);
         writer.flush();
 
-        Util.aguardar(500);
+        msgCliente = receberMsg(reader);
 
-        msgCliente = reader.readLine();
-        if (msgCliente.startsWith("NOTFOUND")) {
-            writer.write("CACHE-STORE;" + randomID + ";" + this.address + "-" + this.port + "\r\n");
+        System.out.println("Server: " + msgCliente);
+
+        if (msgCliente.startsWith("-> NOTFOUND")) {
+            msgServer = "CACHE-STORE;" + randomID + ";" + this.address + "-" + this.port + "\r\n";
+            System.out.println("Enviando " + msgServer);
+            writer.write(msgServer);
             writer.flush();
+
+            msgCliente = receberMsg(reader);
+
+            if (msgCliente.startsWith("OK")) {
+                writer.write("VER-CACHE\r\n");
+                writer.flush();
+            }
         }
 
         if (msgCliente.startsWith("FOUND")) {
             System.out.println("Found in Cache: " + msgCliente);
         }
+    }
+
+    private String receberMsg(BufferedReader reader) throws IOException {
+        String msg = "";
+
+        while (msg.isEmpty()) {
+            msg = reader.readLine();
+            Util.aguardar(500);
+        }
+        return msg;
     }
 
     public static void main(String args[]) {

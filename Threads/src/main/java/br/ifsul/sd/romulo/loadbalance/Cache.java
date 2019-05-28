@@ -13,7 +13,7 @@ import java.util.Map;
  * @author romulo
  */
 public class Cache {
-    
+
     private Map<Integer, String> memory;
 
     public Cache() {
@@ -23,11 +23,11 @@ public class Cache {
     public Cache(Map<Integer, String> memory) {
         this.memory = memory;
     }
-    
+
     public String getValue(Integer key) {
         return memory.get(key);
     }
-    
+
     public void store(String value, Integer key) {
         memory.put(key, value);
     }
@@ -39,7 +39,15 @@ public class Cache {
     public void sync(Map<Integer, String> memory) {
         this.memory = memory;
     }
-    
-    
-    
+
+    void printAllEntries() {
+        System.out.println("Chave \t Valor");
+        for (Map.Entry<Integer, String> entry : memory.entrySet()) {
+            Integer key = entry.getKey();
+            String value = entry.getValue();
+            System.out.println(key + " \t " + value);
+
+        }
+    }
+
 }

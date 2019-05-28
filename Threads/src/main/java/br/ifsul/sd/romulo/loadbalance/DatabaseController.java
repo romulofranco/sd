@@ -25,7 +25,7 @@ public class DatabaseController extends Thread {
 
     private DatabaseController() {
         consumer = new CSVConsumer();
-        mainCache = new Cache();     
+        mainCache = new Cache();
     }
 
     public static DatabaseController getInstance() {
@@ -35,15 +35,16 @@ public class DatabaseController extends Thread {
         return instance;
     }
 
-    public static void initializeCache() {
+    public Cache initializeCache() {
         try {
             mainCache.sync(consumer.createCacheMap("C:\\ftp\\legado_1_arquivo_1.csv"));
-
+            return mainCache;
         } catch (InterruptedException ex) {
             Logger.getLogger(DatabaseController.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(DatabaseController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
     }
 
     public void storeMainCache(Integer key, String value, boolean triggerUpdateAll) {

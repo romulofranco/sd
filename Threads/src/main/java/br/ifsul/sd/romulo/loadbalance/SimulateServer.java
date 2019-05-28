@@ -9,7 +9,6 @@ import br.ifsul.sd.romulo.aula_12.Util;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -38,6 +37,11 @@ public class SimulateServer extends Thread {
         this.running = true;
         this.completedLoad = 0;
         this.cache = new Cache();
+    }
+    
+    
+    public void inicializarCache() {
+        this.cache = DatabaseController.getInstance().initializeCache();
     }
 
     public void iniciarServer() {
@@ -72,7 +76,7 @@ public class SimulateServer extends Thread {
     @Override
     public void run() {
         monitorServer = new MonitorServer(this);
-
+        this.inicializarCache();
         this.iniciarServer();
     }
 
